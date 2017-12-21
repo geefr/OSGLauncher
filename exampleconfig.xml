@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<menuentry>
+  <image>/absolute/path/to/images/1.jpg</image>
+  <command>echo Entry 1</command>
+</menuentry>
+<menuentry>
+  <image>/absolute/path/to/images/2.jpg</image>
+  <command>echo Entry 2</command>
+</menuentry>
+
