@@ -30,3 +30,8 @@ target_link_libraries( ${PROJECT_NAME}
   osgDB
   osgGA
   osgViewer )
+
+install( TARGETS ${PROJECT_NAME}
+         RUNTIME DESTINATION bin )
+install( DIRECTORY ${PROJECT_SOURCE_DIR}/config
+         DESTINATION "config" )
