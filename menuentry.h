@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class MenuEntry
 {
 public:
-  MenuEntry( const tinyxml2::XMLElement* xmlEntry );
+  MenuEntry( const tinyxml2::XMLElement* xmlEntry, std::string xmlFile );
   MenuEntry(const std::string& image, const std::string& command);
   ~MenuEntry();
 

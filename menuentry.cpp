@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <osg/Geometry>
 #include <osgDB/ReadFile>
 
-MenuEntry::MenuEntry( const tinyxml2::XMLElement* xmlEntry )
+MenuEntry::MenuEntry( const tinyxml2::XMLElement* xmlEntry, std::string xmlFile )
 {
   // We're looking for an <image> and a <command>
   // TODO: Error handling
@@ -45,7 +45,27 @@ MenuEntry::MenuEntry( const tinyxml2::XMLElement* xmlEntry )
     const char* xmlImageText{ xmlImage->GetText() };
     if( xmlImageText )
     {
-      m_image = xmlImageText;
+      std::string imgFilename( xmlImageText );
+#ifndef MSC_VER
+      if( imgFilename.compare(0, 1, "/", 1) != 0 )
+      {
+        // Path isn't absolute, assume relative to the config file
+        auto lastSlashXmlDir = xmlFile.find_last_of('/');
+        if( lastSlashXmlDir == std::string::npos )
+        {
+          // Config must be in pwd
+          // Paths left relative to pwd
+        }
+        else
+        {
+          m_image = xmlFile.substr(0, lastSlashXmlDir);
+          m_image.append("/");
+          m_image.append( xmlImageText );
+        }
+      }
+#else
+# error "Windows not currently supported"
+#endif
     }
   }
   if( xmlCommand )

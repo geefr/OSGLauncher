@@ -90,13 +90,13 @@ int Main::run(int argc, const char** argv)
       return 1;
     }
 
-    std::shared_ptr<MenuEntry> menuEntry( new MenuEntry(entry) );
+    std::shared_ptr<MenuEntry> menuEntry( new MenuEntry(entry, configXML) );
     entries->emplace_back( menuEntry );
 
     tinyxml2::XMLElement* sibling{ entry->NextSiblingElement("menuentry") };
     while( sibling != nullptr )
     {
-      std::shared_ptr<MenuEntry> menuEntry( new MenuEntry(sibling) );
+      std::shared_ptr<MenuEntry> menuEntry( new MenuEntry(sibling, configXML) );
       entries->emplace_back( menuEntry );
       sibling = sibling->NextSiblingElement("menuentry");
     }

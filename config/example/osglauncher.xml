@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <menuentry>
   <name>Test Entry 1</name>
-  <image>/absolute/path/to/images/1.jpg</image>
+  <!-- image paths are either absolute, or relative to the config file -->
+  <image>images/1.png</image>
   <command>echo Entry 1</command>
 </menuentry>
 <menuentry>
   <name>Test Entry 2</name>
-  <image>/absolute/path/to/images/2.jpg</image>
+  <image>images/2.png</image>
   <command>echo Entry 2</command>
 </menuentry>
 <menuentry>
   <name>Test Entry 3</name>
-  <image>/absolute/path/to/images/3.jpg</image>
+  <image>images/3.png</image>
   <command>echo Entry 3</command>
 </menuentry>
 <menuentry>
   <name>Test Entry 4</name>
-  <image>/absolute/path/to/images/4.jpg</image>
+  <image>images/4.png</image>
   <command>echo Entry 4</command>
 </menuentry>
 <menuentry>
   <name>Test Entry 5</name>
-  <image>/absolute/path/to/images/5.jpg</image>
+  <image>images/5.png</image>
   <command>echo Entry 5</command>
 </menuentry>
 
