@@ -69,6 +69,10 @@ MenuEntry::MenuEntry( const tinyxml2::XMLElement* xmlEntry, std::string xmlFile 
 #else
 # error "Windows not currently supported"
 #endif
+      else
+      {
+        m_image = imgFilename;
+      }
     }
   }
   if( xmlCommand )
