@@ -29,10 +29,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "menuentry.h"
+#include "settings.h"
 
 #include <osg/Texture2D>
 #include <osg/Geometry>
 #include <osgDB/ReadFile>
+#include <osgText/Text3D>
 
 MenuEntry::MenuEntry( const tinyxml2::XMLElement* xmlEntry, std::string xmlFile )
 {
@@ -40,6 +42,7 @@ MenuEntry::MenuEntry( const tinyxml2::XMLElement* xmlEntry, std::string xmlFile 
   // TODO: Error handling
   const tinyxml2::XMLElement* xmlImage{ xmlEntry->FirstChildElement("image") };
   const tinyxml2::XMLElement* xmlCommand{ xmlEntry->FirstChildElement("command") };
+  const tinyxml2::XMLElement* xmlName{ xmlEntry->FirstChildElement("name") };
   if( xmlImage )
   {
     const char* xmlImageText{ xmlImage->GetText() };
@@ -76,6 +79,14 @@ MenuEntry::MenuEntry( const tinyxml2::XMLElement* xmlEntry, std::string xmlFile 
       m_command = xmlCommandText;
     }
   }
+  if( xmlName )
+  {
+    const char* xmlNameText{ xmlName->GetText() };
+    if( xmlNameText )
+    {
+      m_name = xmlNameText;
+    }
+  }
 }
 
 MenuEntry::MenuEntry(const std::string& image, const std::string& command)
@@ -90,46 +101,72 @@ MenuEntry::~MenuEntry()
 
 }
 
-osg::ref_ptr<osg::Geode> MenuEntry::osgGeode()
+osg::ref_ptr<osg::Group> MenuEntry::osgGroup()
 {
-  if( m_osgGeode )
+  if( m_osgGroup )
   {
-    return m_osgGeode;
+    return m_osgGroup;
   }
 
-  osg::ref_ptr<osg::Vec3Array> vertices( new osg::Vec3Array() );
-  vertices->push_back( osg::Vec3(-0.5, 0.0, -0.5) );
-  vertices->push_back( osg::Vec3( 0.5, 0.0, -0.5) );
-  vertices->push_back( osg::Vec3( 0.5, 0.0,  0.5) );
-  vertices->push_back( osg::Vec3(-0.5, 0.0,  0.5) );
-  vertices->push_back( osg::Vec3(-0.5, 0.0, -0.5) );
-  vertices->push_back( osg::Vec3( 0.5, 0.0,  0.5) );
+  m_osgGroup = new osg::Group();
 
-  osg::ref_ptr<osg::Vec3Array> normals( new osg::Vec3Array() );
-  normals->push_back( osg::Vec3( 0.0, -1.0, 0.0 ) );
+  // Geode to display textured quad
+  {
+    osg::ref_ptr<osg::Vec3Array> vertices( new osg::Vec3Array() );
+    vertices->push_back( osg::Vec3(-0.5, 0.0, -0.5) );
+    vertices->push_back( osg::Vec3( 0.5, 0.0, -0.5) );
+    vertices->push_back( osg::Vec3( 0.5, 0.0,  0.5) );
+    vertices->push_back( osg::Vec3(-0.5, 0.0,  0.5) );
+    vertices->push_back( osg::Vec3(-0.5, 0.0, -0.5) );
+    vertices->push_back( osg::Vec3( 0.5, 0.0,  0.5) );
 
-  osg::ref_ptr<osg::Vec2Array> texCoords( new osg::Vec2Array );
-  texCoords->push_back( osg::Vec2( 0.0, 0.0 ) );
-  texCoords->push_back( osg::Vec2( 1.0, 0.0 ) );
-  texCoords->push_back( osg::Vec2( 1.0, 1.0 ) );
-  texCoords->push_back( osg::Vec2( 0.0, 1.0 ) );
-  texCoords->push_back( osg::Vec2( 0.0, 0.0 ) );
-  texCoords->push_back( osg::Vec2( 1.0, 1.0 ) );
+    osg::ref_ptr<osg::Vec3Array> normals( new osg::Vec3Array() );
+    normals->push_back( osg::Vec3( 0.0, -1.0, 0.0 ) );
 
-  osg::ref_ptr<osg::Geometry> quad( new osg::Geometry );
-  quad->setVertexArray( vertices );
-  quad->setNormalArray( normals );
-  quad->setNormalBinding( osg::Geometry::BIND_OVERALL );
-  quad->setTexCoordArray( 0, texCoords );
-  quad->addPrimitiveSet( new osg::DrawArrays( GL_TRIANGLES, 0, 6 ) );
+    osg::ref_ptr<osg::Vec2Array> texCoords( new osg::Vec2Array );
+    texCoords->push_back( osg::Vec2( 0.0, 0.0 ) );
+    texCoords->push_back( osg::Vec2( 1.0, 0.0 ) );
+    texCoords->push_back( osg::Vec2( 1.0, 1.0 ) );
+    texCoords->push_back( osg::Vec2( 0.0, 1.0 ) );
+    texCoords->push_back( osg::Vec2( 0.0, 0.0 ) );
+    texCoords->push_back( osg::Vec2( 1.0, 1.0 ) );
 
-  osg::ref_ptr<osg::Texture2D> texture( new osg::Texture2D() );
-  osg::ref_ptr<osg::Image> image( osgDB::readImageFile(m_image) );
-  texture->setImage( image );
+    osg::ref_ptr<osg::Geometry> quad( new osg::Geometry );
+    quad->setVertexArray( vertices );
+    quad->setNormalArray( normals );
+    quad->setNormalBinding( osg::Geometry::BIND_OVERALL );
+    quad->setTexCoordArray( 0, texCoords );
+    quad->addPrimitiveSet( new osg::DrawArrays( GL_TRIANGLES, 0, 6 ) );
 
-  m_osgGeode = new osg::Geode();
-  m_osgGeode->addDrawable( quad );
-  m_osgGeode->getOrCreateStateSet()->setTextureAttributeAndModes(0, texture);
+    osg::ref_ptr<osg::Texture2D> texture( new osg::Texture2D() );
+    osg::ref_ptr<osg::Image> image( osgDB::readImageFile(m_image) );
+    texture->setImage( image );
 
-  return m_osgGeode;
+    osg::ref_ptr<osg::Geode> geode = new osg::Geode();
+    geode = new osg::Geode();
+    geode->addDrawable( quad );
+    geode->getOrCreateStateSet()->setTextureAttributeAndModes(0, texture);
+
+    m_osgGroup->addChild(geode);
+  }
+
+  // 3D text displaying entry name
+  if( !m_name.empty() )
+  {
+    osg::ref_ptr<osgText::Text3D> text = new osgText::Text3D();
+    text->setFont(Settings::instance().font());
+    text->setCharacterSize( 0.2f );
+    text->setCharacterDepth( 0.1f );
+    text->setColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    text->setAxisAlignment( osgText::TextBase::XZ_PLANE );
+    text->setPosition( osg::Vec3(0.0f, 0.0f, -0.75f) );
+    text->setText( m_name );
+    text->setAlignment( osgText::TextBase::CENTER_BOTTOM );
+    osg::ref_ptr<osg::Geode> textGeode = new osg::Geode();
+    textGeode->addDrawable(text);
+
+    m_osgGroup->addChild(textGeode);
+  }
+
+  return m_osgGroup;
 }

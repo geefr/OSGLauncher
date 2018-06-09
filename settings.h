@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, Gareth Francis
+Copyright (c) 2018, Gareth Francis
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,46 +28,28 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef MENUENTRY_H
-#define MENUENTRY_H
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
-#include <osg/Image>
-#include <osg/Group>
-#include <tinyxml2.h>
+#include <osgText/Font3D>
+#include <osgText/Text3D>
 
-#include <string>
-
-class MenuEntry
+class Settings
 {
 public:
-  MenuEntry( const tinyxml2::XMLElement* xmlEntry, std::string xmlFile );
-  MenuEntry(const std::string& image, const std::string& command);
-  ~MenuEntry();
+  static Settings& instance();
 
-  std::string& image();
-  std::string& command();
-  std::string& name();
-  osg::ref_ptr<osg::Group> osgGroup();
+  osg::ref_ptr<osgText::Font>& font();
+
 private:
-  std::string m_image;
-  std::string m_command;
-  std::string m_name;
-  osg::ref_ptr<osg::Group> m_osgGroup;
+  Settings();
+  ~Settings();
+  osg::ref_ptr<osgText::Font3D> m_font;
 };
 
-inline std::string& MenuEntry::image()
+inline osg::ref_ptr<osgText::Font>& Settings::font()
 {
-  return m_image;
-}
-
-inline std::string& MenuEntry::command()
-{
-  return m_command;
-}
-
-inline std::string& MenuEntry::name()
-{
-  return m_name;
+  return m_font;
 }
 
 #endif

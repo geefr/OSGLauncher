@@ -109,6 +109,7 @@ int Main::run(int argc, const char** argv)
   osg::ref_ptr<InputHandler> inputHandler( new InputHandler(this, entries) );
 
   viewer.setSceneData( root );
+  //viewer.setCameraManipulator(new osgGA::TrackballManipulator());
   //viewer.setUpViewInWindow(30, 30, 800, 600);
 
   // Setup scene graph
@@ -121,7 +122,7 @@ int Main::run(int argc, const char** argv)
     osg::ref_ptr<osg::PositionAttitudeTransform> transform = new osg::PositionAttitudeTransform();
     transform->setPosition( osg::Vec3d(entryPos, 0.0, 0.0) );
     entryPos += entryPosDelta;
-    transform->addChild( entry->osgGeode() );
+    transform->addChild( entry->osgGroup() );
     root->addChild( transform );
   }
 
@@ -139,7 +140,7 @@ int Main::run(int argc, const char** argv)
     auto currentIndex = inputHandler->currentIndex();
     viewer.getCamera()->setViewMatrixAsLookAt(
           osg::Vec3d(currentIndex * entryPosDelta, -3.0, 0.0),
-          osg::Vec3(currentIndex * entryPosDelta, 0.0, 0.0),
+          osg::Vec3(currentIndex * entryPosDelta, 0.0, -0.125f),
           osg::Z_AXIS );
 
     std::shared_ptr<MenuEntry> currentEntry( entries->operator[](currentIndex));

@@ -17,7 +17,8 @@ pkg_search_module(TINYXML2 REQUIRED tinyxml2)
 set( SRCS
   main.cpp
   menuentry.cpp
-  inputhandler.cpp )
+  inputhandler.cpp
+  settings.cpp )
 
 add_executable( ${PROJECT_NAME} ${SRCS} )
 
@@ -30,6 +31,7 @@ target_link_libraries( ${PROJECT_NAME}
   osgDB
   osgGA
   osgViewer
+  osgText
   OpenThreads )
 
 install( TARGETS ${PROJECT_NAME}

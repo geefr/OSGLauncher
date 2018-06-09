@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, Gareth Francis
+Copyright (c) 2018, Gareth Francis
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -28,46 +28,28 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef MENUENTRY_H
-#define MENUENTRY_H
+#include "settings.h"
 
-#include <osg/Image>
-#include <osg/Group>
-#include <tinyxml2.h>
+#include <iostream>
 
-#include <string>
-
-class MenuEntry
+Settings& Settings::instance()
 {
-public:
-  MenuEntry( const tinyxml2::XMLElement* xmlEntry, std::string xmlFile );
-  MenuEntry(const std::string& image, const std::string& command);
-  ~MenuEntry();
-
-  std::string& image();
-  std::string& command();
-  std::string& name();
-  osg::ref_ptr<osg::Group> osgGroup();
-private:
-  std::string m_image;
-  std::string m_command;
-  std::string m_name;
-  osg::ref_ptr<osg::Group> m_osgGroup;
-};
-
-inline std::string& MenuEntry::image()
-{
-  return m_image;
+  static Settings settings;
+  return settings;
 }
 
-inline std::string& MenuEntry::command()
+Settings::Settings()
 {
-  return m_command;
+  // Hardcoded font for the time being - TODO: Font in global settings in XML
+  // Default font appears to do nothing in 3D, ttf fonts work
+  m_font = osgText::readFont3DFile("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+  if( !m_font )
+  {
+    std::cerr << "ERROR: Failed to lookup font" << std::endl;
+  }
 }
 
-inline std::string& MenuEntry::name()
+Settings::~Settings()
 {
-  return m_name;
-}
 
-#endif
+}
