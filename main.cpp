@@ -117,9 +117,14 @@ int Main::run(int argc, const char** argv)
   viewer.addEventHandler(inputHandler);
   viewer.realize();
 
+  // Limit framerate to 60fps at least otherwise we're just wasting power/to heat the GPU up
+  auto minFrameTime = 1.0 / 60.0;
+
   // Main program loop
   while( !viewer.done() )
   {
+    auto startTick = osg::Timer::instance()->tick();
+
     // No this isn't efficient
     root->removeChildren(0, root->getNumChildren());
 
@@ -143,6 +148,13 @@ int Main::run(int argc, const char** argv)
         std::cerr << "Command failed (" << result << "): " << currentEntry->command();
       }
       m_enterPressed = false;
+    }
+
+    auto endTick = osg::Timer::instance()->tick();
+    auto frameTime = osg::Timer::instance()->delta_s(startTick, endTick);
+    if( frameTime < minFrameTime )
+    {
+      OpenThreads::Thread::microSleep( 1e6 * (minFrameTime - frameTime) );
     }
   }
   return 0;

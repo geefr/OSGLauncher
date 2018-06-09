@@ -29,7 +29,8 @@ target_link_libraries( ${PROJECT_NAME}
   osg
   osgDB
   osgGA
-  osgViewer )
+  osgViewer
+  OpenThreads )
 
 install( TARGETS ${PROJECT_NAME}
          RUNTIME DESTINATION bin )
