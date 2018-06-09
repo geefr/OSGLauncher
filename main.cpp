@@ -148,6 +148,8 @@ int Main::run(int argc, const char** argv)
         std::cerr << "Command failed (" << result << "): " << currentEntry->command();
       }
       m_enterPressed = false;
+      // Some events can be stuck in the queue while applications are quitting
+      viewer.getEventQueue()->clear();
     }
 
     auto endTick = osg::Timer::instance()->tick();
