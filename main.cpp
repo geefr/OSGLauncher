@@ -109,11 +109,22 @@ int Main::run(int argc, const char** argv)
   osg::ref_ptr<InputHandler> inputHandler( new InputHandler(this, entries) );
 
   viewer.setSceneData( root );
-  //viewer.setCameraManipulator( new osgGA::TrackballManipulator() );
-  viewer.getCamera()->setViewMatrixAsLookAt(
-        osg::Vec3(0.0, -3.0, 0.0), osg::Vec3(), osg::Z_AXIS );
-  viewer.getCamera()->setAllowEventFocus( false );
   //viewer.setUpViewInWindow(30, 30, 800, 600);
+
+  // Setup scene graph
+  // For now just load everything at once as I'm only planning on a few menu entries
+  // TODO: Worry about paging in entries to avoid hogging memory
+  double entryPos = 0.0;
+  double entryPosDelta = 1.2;
+  for( auto entry : *(entries.get()) )
+  {
+    osg::ref_ptr<osg::PositionAttitudeTransform> transform = new osg::PositionAttitudeTransform();
+    transform->setPosition( osg::Vec3d(entryPos, 0.0, 0.0) );
+    entryPos += entryPosDelta;
+    transform->addChild( entry->osgGeode() );
+    root->addChild( transform );
+  }
+
   viewer.addEventHandler(inputHandler);
   viewer.realize();
 
@@ -125,13 +136,13 @@ int Main::run(int argc, const char** argv)
   {
     auto startTick = osg::Timer::instance()->tick();
 
-    // No this isn't efficient
-    root->removeChildren(0, root->getNumChildren());
-
-    unsigned int currentIndex{ inputHandler->currentIndex() };
+    auto currentIndex = inputHandler->currentIndex();
+    viewer.getCamera()->setViewMatrixAsLookAt(
+          osg::Vec3d(currentIndex * entryPosDelta, -3.0, 0.0),
+          osg::Vec3(currentIndex * entryPosDelta, 0.0, 0.0),
+          osg::Z_AXIS );
 
     std::shared_ptr<MenuEntry> currentEntry( entries->operator[](currentIndex));
-    root->addChild( currentEntry->osgGeode() );
 
     viewer.frame();
 
