@@ -1,13 +1,14 @@
 pipeline {
-  agent any
-
+  agent {
+    dockerfile {
+      filename 'source/Dockerfile'
+      label 'docker-host'
+    }
+  }
   options {
-    buildDiscarder( logRotator(artifactDaysToKeepStr: '90') )
+    buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
     checkoutToSubdirectory('source')
     timeout(time: 1, unit: 'HOURS')
-  }
-  triggers { 
-    pollSCM('H * * * *') 
   }
 
   stages {
