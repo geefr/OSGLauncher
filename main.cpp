@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <osg/Geometry>
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
+#include <osgViewer/ViewerBase>
 #include <osgViewer/Viewer>
 #include <osg/PositionAttitudeTransform>
 #include <osg/MatrixTransform>
@@ -109,9 +110,7 @@ int Main::run(int argc, const char** argv)
 
   osg::ref_ptr<InputHandler> inputHandler( new InputHandler(this, entries) );
   viewer.setSceneData( root );
-  //auto windowWidth = 800;
-  //auto windowHeight = 600;
-  //viewer.setUpViewInWindow(30, 30, windowWidth, windowHeight);
+  //viewer.setUpViewInWindow(30, 30, 800, 600);
 
   // Setup scene graph
   // For now just load everything at once as I'm only planning on a few menu entries
@@ -142,6 +141,8 @@ int Main::run(int argc, const char** argv)
 
   auto cam = viewer.getCamera();
 
+
+
   // Main program loop
   while( !viewer.done() )
   {
@@ -149,13 +150,21 @@ int Main::run(int argc, const char** argv)
     auto currentIndex = inputHandler->currentIndex();
     std::shared_ptr<MenuEntry> currentEntry( entries->operator[](currentIndex));
 
+    osgViewer::ViewerBase::Contexts context;
+    viewer.getContexts(context, true);
+    auto traits = context.front()->getTraits();
+    double windowWidth = traits->width;
+    double windowHeight = traits->height;
+
     // So this bit is nasty and hardcoded, but it'll do for now
     // Essentially implements lookAt( currentItem ) with an ortho proj
     auto viewScale = 1.5;
     auto viewCenterX = currentIndex * entryPosDelta;
     auto viewCenterY = -0.1;
     auto viewHalfWidth = (entryPosDelta / 2.0) * viewScale;
-    auto viewHalfHeight = ((windowWidth / windowHeight) / 2.0) * viewScale;
+    auto viewHalfHeight = viewHalfWidth * (windowHeight / windowWidth) * viewScale;
+
+    //std::cout << "view: " << windowWidth << "x" << windowHeight << " " << viewCenterX - viewHalfWidth << "," << viewCenterX + viewHalfWidth << " " << viewCenterY - viewHalfHeight << "," << viewCenterY + viewHalfHeight << std::endl;
     cam->setProjectionMatrixAsOrtho(
           viewCenterX - viewHalfWidth, viewCenterX + viewHalfWidth,
           viewCenterY - viewHalfHeight, viewCenterY + viewHalfHeight,
