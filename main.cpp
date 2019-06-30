@@ -141,8 +141,6 @@ int Main::run(int argc, const char** argv)
 
   auto cam = viewer.getCamera();
 
-
-
   // Main program loop
   while( !viewer.done() )
   {
@@ -158,13 +156,11 @@ int Main::run(int argc, const char** argv)
 
     // So this bit is nasty and hardcoded, but it'll do for now
     // Essentially implements lookAt( currentItem ) with an ortho proj
-    auto viewScale = 1.5;
+    auto viewScale = 1.2;
     auto viewCenterX = currentIndex * entryPosDelta;
     auto viewCenterY = -0.1;
-    auto viewHalfWidth = (entryPosDelta / 2.0) * viewScale;
-    auto viewHalfHeight = viewHalfWidth * (windowHeight / windowWidth) * viewScale;
-
-    //std::cout << "view: " << windowWidth << "x" << windowHeight << " " << viewCenterX - viewHalfWidth << "," << viewCenterX + viewHalfWidth << " " << viewCenterY - viewHalfHeight << "," << viewCenterY + viewHalfHeight << std::endl;
+    auto viewHalfHeight = (entryPosDelta / 2.0) * viewScale;
+    auto viewHalfWidth = viewHalfHeight * (windowWidth / windowHeight);
     cam->setProjectionMatrixAsOrtho(
           viewCenterX - viewHalfWidth, viewCenterX + viewHalfWidth,
           viewCenterY - viewHalfHeight, viewCenterY + viewHalfHeight,
