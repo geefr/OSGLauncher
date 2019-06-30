@@ -45,7 +45,7 @@ InputHandler::~InputHandler()
 
 }
 
-bool InputHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
+bool InputHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& )
 {
   switch( ea.getEventType() )
   {
