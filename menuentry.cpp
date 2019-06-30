@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, Gareth Francis
+Copyright (c) 2019, Gareth Francis
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <osg/Texture2D>
 #include <osg/Geometry>
 #include <osgDB/ReadFile>
-#include <osgText/Text3D>
+#include <osgText/Text>
 
 MenuEntry::MenuEntry( const tinyxml2::XMLElement* xmlEntry, std::string xmlFile )
 {
@@ -157,10 +157,9 @@ osg::ref_ptr<osg::Group> MenuEntry::osgGroup()
   // 3D text displaying entry name
   if( !m_name.empty() )
   {
-    osg::ref_ptr<osgText::Text3D> text = new osgText::Text3D();
+    osg::ref_ptr<osgText::Text> text = new osgText::Text();
     text->setFont(Settings::instance().font());
-    text->setCharacterSize( 0.2f );
-    text->setCharacterDepth( 0.1f );
+    text->setCharacterSize( 0.15f );
     text->setColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
     text->setAxisAlignment( osgText::TextBase::XZ_PLANE );
     text->setPosition( osg::Vec3(0.0f, 0.0f, -0.75f) );
