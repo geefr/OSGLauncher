@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2017, Gareth Francis
+Copyright (c) 2019, Gareth Francis
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <osg/Geometry>
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
+#include <osgViewer/ViewerBase>
 #include <osgViewer/Viewer>
 #include <osg/PositionAttitudeTransform>
+#include <osg/MatrixTransform>
 
 #include <osgGA/TrackballManipulator>
 #include <osgGA/NodeTrackerManipulator>
@@ -104,19 +106,18 @@ int Main::run(int argc, const char** argv)
 
   // OSG setup
   osgViewer::Viewer viewer;
-  osg::Group* root = new osg::Group();
+  auto* root = new osg::MatrixTransform();
 
   osg::ref_ptr<InputHandler> inputHandler( new InputHandler(this, entries) );
-
   viewer.setSceneData( root );
-  //viewer.setCameraManipulator(new osgGA::TrackballManipulator());
   //viewer.setUpViewInWindow(30, 30, 800, 600);
 
   // Setup scene graph
   // For now just load everything at once as I'm only planning on a few menu entries
   // TODO: Worry about paging in entries to avoid hogging memory
   double entryPos = 0.0;
-  double entryPosDelta = 1.2;
+  auto entryPosDelta = 1.2;
+
   for( auto entry : *(entries.get()) )
   {
     osg::ref_ptr<osg::PositionAttitudeTransform> transform = new osg::PositionAttitudeTransform();
@@ -132,18 +133,39 @@ int Main::run(int argc, const char** argv)
   // Limit framerate to 60fps at least otherwise we're just wasting power/to heat the GPU up
   auto minFrameTime = 1.0 / 60.0;
 
+  // The menu entries were written in OpenGL convention (y-up),
+  // so need to rotate the world to fit osg's (z-up) convention
+  osg::Matrix mat(osg::Matrix::identity());
+  mat = mat.rotate(osg::DegreesToRadians(90.0), osg::Vec3(-1.0, 0.0, 0.0));
+  root->setMatrix(mat);
+
+  auto cam = viewer.getCamera();
+
   // Main program loop
   while( !viewer.done() )
   {
     auto startTick = osg::Timer::instance()->tick();
-
     auto currentIndex = inputHandler->currentIndex();
-    viewer.getCamera()->setViewMatrixAsLookAt(
-          osg::Vec3d(currentIndex * entryPosDelta, -3.0, 0.0),
-          osg::Vec3(currentIndex * entryPosDelta, 0.0, -0.125f),
-          osg::Z_AXIS );
-
     std::shared_ptr<MenuEntry> currentEntry( entries->operator[](currentIndex));
+
+    osgViewer::ViewerBase::Contexts context;
+    viewer.getContexts(context, true);
+    auto traits = context.front()->getTraits();
+    double windowWidth = traits->width;
+    double windowHeight = traits->height;
+
+    // So this bit is nasty and hardcoded, but it'll do for now
+    // Essentially implements lookAt( currentItem ) with an ortho proj
+    auto viewScale = 1.2;
+    auto viewCenterX = currentIndex * entryPosDelta;
+    auto viewCenterY = -0.1;
+    auto viewHalfHeight = (entryPosDelta / 2.0) * viewScale;
+    auto viewHalfWidth = viewHalfHeight * (windowWidth / windowHeight);
+    cam->setProjectionMatrixAsOrtho(
+          viewCenterX - viewHalfWidth, viewCenterX + viewHalfWidth,
+          viewCenterY - viewHalfHeight, viewCenterY + viewHalfHeight,
+          1.0, -1.0
+          );
 
     viewer.frame();
 
@@ -168,7 +190,7 @@ int Main::run(int argc, const char** argv)
     auto frameTime = osg::Timer::instance()->delta_s(startTick, endTick);
     if( frameTime < minFrameTime )
     {
-      OpenThreads::Thread::microSleep( 1e6 * (minFrameTime - frameTime) );
+      OpenThreads::Thread::microSleep( static_cast<unsigned int>(1e6 * (minFrameTime - frameTime)) );
     }
   }
   return 0;
