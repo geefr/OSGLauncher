@@ -2,7 +2,7 @@ pipeline {
   agent {
     dockerfile {
       filename 'source/Dockerfile'
-      label 'docker-host'
+      label 'docker-host-dev'
     }
   }
   options {
