@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2018, Gareth Francis
+Copyright (c) 2019, Gareth Francis
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -42,10 +42,15 @@ Settings::Settings()
 {
   // Hardcoded font for the time being - TODO: Font in global settings in XML
   // Default font appears to do nothing in 3D, ttf fonts work
-  m_font = osgText::readFont3DFile("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+  m_font = osgText::readFontFile("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
   if( !m_font )
   {
-    std::cerr << "ERROR: Failed to lookup font" << std::endl;
+    std::cerr << "WARNING: Failed to find font, falling back to ugly default" << std::endl;
+    m_font = osgText::Font::getDefaultFont();
+  }
+  if( !m_font )
+  {
+    std::cerr << "ERROR: Failed to initialise font" << std::endl;
   }
 }
 
