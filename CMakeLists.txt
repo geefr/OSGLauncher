@@ -49,5 +49,5 @@ install( DIRECTORY ${PROJECT_SOURCE_DIR}/config
 if( MSVC)
 # Because windows
   install( FILES ${OPENSCENEGRAPH_LIBRARIES} DESTINATION bin )
-   install( FILES ${TINYXML2_LIBRARIES} DESTINATION bin )
+  install( FILES ${TINYXML2_LIBRARIES} DESTINATION bin )
 endif()
