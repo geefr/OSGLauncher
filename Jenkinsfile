@@ -14,7 +14,7 @@ pipeline {
   stages {
     stage('CMake') { steps {
       dir("${env.WORKSPACE}/build") {
-        sh '''cmake -DOSG_DIR=C:/install/OpenSceneGraph-3.6.3-VC2017-64-Release/ -DCMAKE_INSTALL_PREFIX=../install ../source'''
+        sh '''cmake -DCMAKE_INSTALL_PREFIX=../install ../source'''
       }
     } }
     stage('Build') {
