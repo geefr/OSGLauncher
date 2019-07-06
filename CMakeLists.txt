@@ -40,7 +40,8 @@ target_link_libraries( ${PROJECT_NAME} ${TINYXML2_LIBRARIES} )
 target_compile_options( ${PROJECT_NAME} PUBLIC ${TINYXML2_CFLAGS_OTHER} )
 
 target_link_libraries( ${PROJECT_NAME}
-  ${OPENSCENEGRAPH_LIBRARIES} )
+  ${OPENSCENEGRAPH_LIBRARIES} 
+  tinyxml2::tinyxml2 )
 
 install( TARGETS ${PROJECT_NAME}
          RUNTIME DESTINATION bin )
