@@ -17,10 +17,10 @@ find_package( OpenSceneGraph
     osgText
     osgDB )
 
+# TODO: Not sure why pkgconfig was needed to start with but
+# should be able to use find_package on non-windows just fine
 if( MSVC )
-    if( NOT TINYXML2_INCLUDE_DIRS OR NOT TINYXML2_LIBRARIES)
-        message( FATAL_ERROR "TinyXML is required to build")
-    endif()
+  find_package( tinyxml2 REQUIRED )
 else()
   find_package(PkgConfig REQUIRED)
   pkg_search_module(TINYXML2 REQUIRED tinyxml2)
