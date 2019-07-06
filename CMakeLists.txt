@@ -17,8 +17,11 @@ find_package( OpenSceneGraph
     osgText
     osgDB )
 
-# TODO: Not sure why pkgconfig was needed to start with but
-# should be able to use find_package on non-windows just fine
+# TODO: If I wasn't so lazy here could have a single setup
+# On windows we're using the latest tinyxml, which includes cmake integration
+# On non-windows we're using the package manager's version, which for current
+# build config doesn't.
+# So for now it's a bunch of hacks here
 if( MSVC )
   find_package( tinyxml2 REQUIRED )
 else()
@@ -39,9 +42,10 @@ target_include_directories( ${PROJECT_NAME} PUBLIC ${TINYXML2_INCLUDE_DIRS} ${OS
 target_link_libraries( ${PROJECT_NAME} ${TINYXML2_LIBRARIES} )
 target_compile_options( ${PROJECT_NAME} PUBLIC ${TINYXML2_CFLAGS_OTHER} )
 
-target_link_libraries( ${PROJECT_NAME}
-  ${OPENSCENEGRAPH_LIBRARIES} 
-  tinyxml2::tinyxml2 )
+target_link_libraries( ${PROJECT_NAME} ${OPENSCENEGRAPH_LIBRARIES} )
+if( MSVC )
+target_link_libraries( ${PROJECT_NAME} tinyxml2::tinyxml2 )
+endif()
 
 install( TARGETS ${PROJECT_NAME}
          RUNTIME DESTINATION bin )
