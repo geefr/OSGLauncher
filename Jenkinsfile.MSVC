@@ -11,7 +11,7 @@ pipeline {
   stages {
     stage('CMake') { steps {
       dir("${env.WORKSPACE}/build") {
-        bat '''cmake -G "Visual Studio 15 2017 Win64" -DOSG_DIR=C:/install/OpenSceneGraph-3.6.3-VC2017-64-Release/ -DTINYXML_DIR=C:/install/tinyxml2/ -DCMAKE_INSTALL_PREFIX=../install ../source'''
+        bat '''cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/install/tinyxml2/lib/cmake/tinyxml2 -DOSG_DIR=C:/install/OpenSceneGraph-3.6.3-VC2017-64-Release/ -DCMAKE_INSTALL_PREFIX=../install ../source'''
       }
     } }
     stage('Build') {
