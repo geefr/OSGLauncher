@@ -21,12 +21,12 @@ pipeline {
         }
       }
     }
-//    stage('Artifacts') {
-//      steps {
-//          bat '''tar -cvzf OSGLauncher.tar.gz install/*'''
-//archiveArtifacts artifacts: 'OSGLauncher.tar.gz', fingerprint: true, onlyIfSuccessful: true
-//      }
-//    }
+    stage('Artifacts') {
+      steps {
+          sh '''tar -cvzf OSGLauncher.tar.gz install/*'''
+archiveArtifacts artifacts: 'OSGLauncher.tar.gz', fingerprint: true, onlyIfSuccessful: true
+      }
+    }
   }
 
   post {
