@@ -1,0 +1,38 @@
+pipeline {
+  agent {
+    label 'MSVC'
+  }
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
+    checkoutToSubdirectory('source')
+    timeout(time: 1, unit: 'HOURS')
+  }
+
+  stages {
+    stage('CMake') { steps {
+      dir("${env.WORKSPACE}/build") {
+        bat '''cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH=C:/install/tinyxml2/lib/cmake/tinyxml2 -DOSG_DIR=C:/install/OpenSceneGraph-3.6.3-VC2017-64-Release/ -DCMAKE_INSTALL_PREFIX=../install ../source'''
+      }
+    } }
+    stage('Build') {
+      steps {
+        dir("${env.WORKSPACE}/build") {
+          bat '''cmake --build .'''
+        }
+      }
+    }
+//    stage('Artifacts') {
+//      steps {
+//          bat '''tar -cvzf OSGLauncher.tar.gz install/*'''
+//archiveArtifacts artifacts: 'OSGLauncher.tar.gz', fingerprint: true, onlyIfSuccessful: true
+//      }
+//    }
+  }
+
+  post {
+    always {
+emailext attachLog: true, body: '''${DEFAULT_CONTENT}''', compressLog: true, recipientProviders: [[$class: 'CulpritsRecipientProvider']], subject: '${DEFAULT_SUBJECT}', to: '${DEFAULT_RECIPIENTS}'
+    }
+  }
+}
+
